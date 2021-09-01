@@ -1,1 +1,1 @@
-puts 'magic code goes here ...'
+puts 'Magic code goes here ...'
