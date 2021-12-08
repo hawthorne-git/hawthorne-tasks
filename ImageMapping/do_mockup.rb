@@ -59,7 +59,7 @@ img_from_base64[0,8]
 # find file type
 filetype = /(png|jpg|jpeg|gif|PNG|JPG|JPEG|GIF)/.match(img_from_base64[0,16])[0]
 # name the file
-filename = "mockup#{fabric}#{el_width}x#{el_height}"
+filename = "mockups/mockup#{fabric}#{el_width}x#{el_height}"
 
 # write file
 file = filename << '.' << filetype
