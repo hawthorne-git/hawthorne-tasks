@@ -13,7 +13,7 @@ INPUT_IMAGE_DPI = 300.0
 # -----------------------------------------------------------------
 # set image file paths
 
-SINGLE_REPEAT_TIF_IMAGE_PATH = 'charlie/images/input/50190.tif'
+SINGLE_REPEAT_TIF_IMAGE_PATH = 'charlie/images/input/90470.tif'
 
 SINGLE_REPEAT_PNG_IMAGE_PATH = 'charlie/images/temp/1_image_png.png'
 
