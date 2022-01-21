@@ -1,11 +1,10 @@
 require "vips"
 require 'open-uri'
 
-puts " file loading"
 image_path = 'C:/Users/ht-ruby/Desktop/mapped_image.png'
-temp_png = "temp/1_image_png.png"
-temp_jpg = "temp/2_image_jpeg.jpg"
-temp_webp = "temp/final2reduce4.webp"
+temp_png = "C:/Users/ht-ruby/Desktop/1_image_png.png"
+temp_jpg = "C:/Users/ht-ruby/Desktop/2_image_jpeg.jpg"
+temp_webp = "C:/Users/ht-ruby/Desktop/inal2reduce4.webp"
 
 a = Vips::Image.new_from_file image_path
 a.pngsave(temp_png, :compression => 1, :palette => true, :strip => true)
