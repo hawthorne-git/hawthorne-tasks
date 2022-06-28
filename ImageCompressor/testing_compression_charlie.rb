@@ -1,6 +1,7 @@
-require "vips"
+require 'image_processing/mini_magick'
 
-im = Vips::Image.new_from_file 'C:/Users/ht-ruby/Desktop/mapped_image.png'
+image_path = 'C:/Users/hawth/Desktop/Luna Fawn.png'
 
-# finally, write the result back to a file on disk
-im.write_to_file 'C:/Users/ht-ruby/Desktop/mapped_image_vips.png'
+image = MiniMagick::Image.open(image_path)
+
+processed = ImageProcessing::MiniMagick.source(image).resize_to_limit(400, 400).strip.call
