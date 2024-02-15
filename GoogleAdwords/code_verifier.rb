@@ -1,0 +1,4 @@
+
+pkce_challenge = PkceChallenge.challenge
+puts pkce_challenge.code_challenge
+puts pkce_challenge.code_verifier
