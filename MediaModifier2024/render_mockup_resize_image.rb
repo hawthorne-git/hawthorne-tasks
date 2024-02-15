@@ -113,7 +113,7 @@ puts 'tiled_pixel_height: ' + tiled_pixel_height.to_s
 
 #image_tiled.write('output.jpeg')
 
-image_path_on_aws = 'https://idesign-s3-bucket.s3.us-east-2.amazonaws.com/charlietest/test2.jpeg'
+image_path_on_aws = 'https://idesign-s3-bucket.s3.us-east-2.amazonaws.com/charlietest/test.jpeg'
 
 # -------------------------------------------------------------------- Map the image with Media Modifier
 
