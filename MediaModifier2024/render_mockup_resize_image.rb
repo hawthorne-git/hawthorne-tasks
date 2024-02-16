@@ -1,4 +1,4 @@
-require 'base64'
+require 'aws-sdk-s3'
 require 'json/ext'
 require 'mini_magick'
 require 'rest-client'
@@ -18,7 +18,9 @@ MAPPED_IMAGE_HEIGHT_IN_PIXELS = 1350
 MAPPED_IMAGE_WIDTH_IN_INCHES = 50.0
 MAPPED_IMAGE_HEIGHT_IN_INCHES = 60.0
 
-IMAGE_URL = 'https://cl.imagineapi.dev/assets/98091e8d-2d23-4030-abf1-65c21f493832/98091e8d-2d23-4030-abf1-65c21f493832.png'
+IMAGE_URL = 'https://cl.imagineapi.dev/assets/2b83182e-602c-4af8-9710-37665e999bf4/2b83182e-602c-4af8-9710-37665e999bf4.png'
+
+SCALE = 0.75
 
 # -------------------------------------------------------------------- Open the image
 
@@ -44,8 +46,8 @@ dpi_y = (image['%[resolution.y]'].to_f * multiplier).to_i
 puts 'dpi_x: ' + dpi_x.to_s
 puts 'dpi_y: ' + dpi_y.to_s
 
-width_in_inches = pixel_width.to_f / dpi_x.to_f
-height_in_inches = pixel_height.to_f / dpi_y.to_f
+width_in_inches = pixel_width.to_f / dpi_x.to_f * SCALE
+height_in_inches = pixel_height.to_f / dpi_y.to_f * SCALE
 puts 'width_in_inches: ' + width_in_inches.to_s
 puts 'height_in_inches: ' + height_in_inches.to_s
 
@@ -85,8 +87,8 @@ puts 'image_tiled_size: ' + (image_tiled['%[size]'].to_f / 1024 / 1024).to_s + '
 
 # -------------------------------------------------------------------- Crop the image to the correct width / height in inches
 
-cropped_pixel_width = (MAPPED_IMAGE_WIDTH_IN_INCHES.to_f * dpi_x.to_f).ceil
-cropped_pixel_height = (MAPPED_IMAGE_HEIGHT_IN_INCHES.to_f * dpi_y.to_f).ceil
+cropped_pixel_width = (MAPPED_IMAGE_WIDTH_IN_INCHES.to_f * dpi_x.to_f / SCALE.to_f).ceil
+cropped_pixel_height = (MAPPED_IMAGE_HEIGHT_IN_INCHES.to_f * dpi_y.to_f / SCALE.to_f).ceil
 puts 'cropped_pixel_width: ' + cropped_pixel_width.to_s
 puts 'cropped_pixel_height: ' + cropped_pixel_height.to_s
 
@@ -98,7 +100,12 @@ puts 'image_tiled_size: ' + (image_tiled['%[size]'].to_f / 1024 / 1024).to_s + '
 
 # -------------------------------------------------------------------- Resize the image to what will be map / mocked up
 
-resize_format = MAPPED_IMAGE_WIDTH_IN_PIXELS.to_s + 'x' + MAPPED_IMAGE_HEIGHT_IN_PIXELS.to_s
+resized_image_width_in_pixes = (MAPPED_IMAGE_WIDTH_IN_INCHES < MAPPED_IMAGE_HEIGHT_IN_INCHES) ? MAPPED_IMAGE_WIDTH_IN_PIXELS : (MAPPED_IMAGE_WIDTH_IN_INCHES / MAPPED_IMAGE_HEIGHT_IN_INCHES * MAPPED_IMAGE_WIDTH_IN_PIXELS).to_i
+resized_image_height_in_pixes = (MAPPED_IMAGE_HEIGHT_IN_INCHES < MAPPED_IMAGE_WIDTH_IN_INCHES) ? MAPPED_IMAGE_HEIGHT_IN_PIXELS : (MAPPED_IMAGE_HEIGHT_IN_INCHES / MAPPED_IMAGE_WIDTH_IN_INCHES * MAPPED_IMAGE_HEIGHT_IN_PIXELS).to_i
+puts 'resized_image_width_in_pixes: ' + resized_image_width_in_pixes.to_s
+puts 'resized_image_height_in_pixes: ' + resized_image_height_in_pixes.to_s
+
+resize_format = resized_image_width_in_pixes.to_s + 'x' + resized_image_height_in_pixes.to_s
 puts 'resize_format: ' + resize_format.to_s
 
 image_tiled.resize(resize_format)
@@ -109,11 +116,26 @@ tiled_pixel_height = image_tiled['%[height]'].to_i
 puts 'tiled_pixel_width: ' + tiled_pixel_width.to_s
 puts 'tiled_pixel_height: ' + tiled_pixel_height.to_s
 
+return if false
+
 # -------------------------------------------------------------------- Save the image in AWS s3
 
-#image_tiled.write('output.jpeg')
+s3 = Aws::S3::Client.new(
+  region: 'us-east-2',
+  credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY'])
+)
 
-image_path_on_aws = 'https://idesign-s3-bucket.s3.us-east-2.amazonaws.com/charlietest/test.jpeg'
+aws_key = [*('a'..'z'), *('A'..'Z'), *('0'..'9')].shuffle[0, 25].join + '.jpeg'
+puts 'aws_key: ' + aws_key.to_s
+
+s3.put_object(
+  bucket: 'mapping-temp',
+  key: aws_key,
+  body: StringIO.open(image_tiled.to_blob)
+)
+
+image_path_on_aws = 'https://mapping-temp.s3.us-east-2.amazonaws.com/' + aws_key
+puts 'image_path_on_aws: ' + image_path_on_aws.to_s
 
 # -------------------------------------------------------------------- Map the image with Media Modifier
 
