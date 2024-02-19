@@ -2,7 +2,7 @@ require 'rest-client'
 
 -----------------------------------------------------------------
 
-MOCKUP_NBR = 148261
+MOCKUP_NBR = 1467
 
 API_URL = 'https://api.mediamodifier.com/mockup/nr/' + MOCKUP_NBR.to_s
 
