@@ -5,7 +5,7 @@ require 'json/ext'
 
 AWS_IMAGE_KEY = 'swimwear_test.png'
 
-AWS_IMAGE_KEY = '12e871x5x3wbeh7ae8muvtfkqkna'
+#AWS_IMAGE_KEY = '12e871x5x3wbeh7ae8muvtfkqkna'
 
 # ----------------------------------------------
 
@@ -34,8 +34,6 @@ response[:labels].each do |label|
   puts label.to_s
   puts label[:name]
 end
-
-return if true
 
 # ----------------------------------------------
 
