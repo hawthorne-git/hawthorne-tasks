@@ -16,7 +16,7 @@ customer_id = 51606265339
 
 create_customer = false
 
-find_customer = true
+find_customer = false
 
 update_customer = false
 
