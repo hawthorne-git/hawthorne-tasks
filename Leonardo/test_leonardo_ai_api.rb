@@ -12,7 +12,7 @@ get_user_info = true
 # ---------------------------------------------------------------------------
 
 header = {
-  Authorization: 'Bearer ' + 'a63919ea-3e99-4242-8aff-8cb260b58574',
+  Authorization: 'Bearer ' + ENV['LEONARDO_TOKEN'],
   content_type: :json
 }
 
