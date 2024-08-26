@@ -59,7 +59,7 @@ if create_image
     "height": 512,
     "width": 512,
     "modelId": "b24e16ff-06e3-43eb-8d33-4416c2d75876",
-    "prompt": "mountains painted by monet",
+    "prompt": "coffee in a diner",
     "num_images": 1
   }
 
