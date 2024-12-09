@@ -5,7 +5,7 @@ require 'nokogiri'
 base_url = "https://www.rileyblakedesigns.com"
 
 # URL for Riley Blake collection
-collection_url = "#{base_url}/Fabric/Basics/Confetti-Cottons?page=1"
+collection_url = "#{base_url}/Fabric/Basics/Bee-Backgrounds-2?page=1"
 
 # Fetch the HTML of the collection page
 html = URI.open(collection_url).read
@@ -39,19 +39,31 @@ product_links.each do |link|
     product_html = URI.open(product_url).read
     product_doc = Nokogiri::HTML(product_html)
 
-    # Extract UPC and SKU
+    # Extract product details
     upc_code = product_doc.css('.list-details p').find { |p| p.text.include?('UPC Code') }
     sku_number = product_doc.css('.list-details p').find { |p| p.text.include?('Item Number') }
+    fiber_content = product_doc.css('.list-details p').find { |p| p.text.include?('Fiber Content') }
+    fabric_width = product_doc.css('.list-details p').find { |p| p.text.include?('Width') }
+    designer_name = product_doc.css('.list-details p').find { |p| p.text.include?('Designer') }
+    collection_name = product_doc.css('.list-details p').find { |p| p.text.include?('Collection') }
 
-    if upc_code && sku_number
+    if upc_code && sku_number && fiber_content && fabric_width && designer_name && collection_name
       upc_number = upc_code.text.strip.split(':').last.strip
       sku_number = sku_number.text.strip.split(':').last.strip
+      fiber_content = fiber_content.text.strip.split(':').last.strip
+      fabric_width = fabric_width.text.strip.split(':').last.strip
+      designer_name = designer_name.text.strip.split(':').last.strip
+      collection_name = collection_name.text.strip.split(':').last.strip
 
       puts "UPC number: #{upc_number}"
       puts "SKU number: #{sku_number}"
+      puts "Fiber content: #{fiber_content}"
+      puts "Fabric width: #{fabric_width}"
+      puts "Designer: #{designer_name}"
+      puts "Collection name: #{collection_name}"
       puts "---------------------------------------------------------------"
     else
-      puts "UPC or SKU number not found."
+      puts "Collection details not found"
     end
   rescue => e
     puts "Error fetching or parsing product page: #{e.message}"
