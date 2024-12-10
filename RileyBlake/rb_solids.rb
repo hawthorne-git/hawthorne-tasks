@@ -5,7 +5,7 @@ require 'nokogiri'
 base_url = "https://www.rileyblakedesigns.com"
 
 # URL for Riley Blake collection
-collection_url = "#{base_url}/Fabric/Basics/Confetti-Cottons?=page1"
+collection_url = "#{base_url}/Fabric/Basics/Confetti-Cottons?=page7"
 
 # Fetch the HTML of the collection page
 html = URI.open(collection_url).read
@@ -46,14 +46,25 @@ product_links.each do |link|
     fabric_width = product_doc.css('.list-details p').find { |p| p.text.include?('Width') }
     designer_name = product_doc.css('.list-details p').find { |p| p.text.include?('Designer') }
     collection_name = product_doc.css('.list-details p').find { |p| p.text.include?('Collection') }
+    item_description = product_doc.css('.list-details p').find { |p| p.text.include?('Item Description') }
+    washing_instructions = product_doc.css('.list-details p').find { |p| p.text.include?('Washing Instructions') }
 
-    if upc_code && sku_number && fiber_content && fabric_width && designer_name && collection_name
+    # Extract the image URL
+    image_element = product_doc.css('div.item-details-image-gallery-detailed-image img.center-block')
+    image_url = image_element.attr('src').to_s if image_element
+
+    # Encoding URL to remove space from image link
+    encoded_image_url = URI::DEFAULT_PARSER.escape(image_url)
+
+    if upc_code && sku_number && fiber_content && fabric_width && designer_name && collection_name && item_description && washing_instructions && image_url
       upc_number = upc_code.text.strip.split(':').last.strip
       sku_number = sku_number.text.strip.split(':').last.strip
       fiber_content = fiber_content.text.strip.split(':').last.strip
       fabric_width = fabric_width.text.strip.split(':').last.strip
       designer_name = designer_name.text.strip.split(':').last.strip
       collection_name = collection_name.text.strip.split(':').last.strip
+      item_description = item_description.text.strip.split(':').last.strip
+      washing_instructions = washing_instructions.text.strip.split(':').last.strip
 
       puts "UPC number: #{upc_number}"
       puts "SKU number: #{sku_number}"
@@ -61,6 +72,9 @@ product_links.each do |link|
       puts "Fabric width: #{fabric_width}"
       puts "Designer: #{designer_name}"
       puts "Collection name: #{collection_name}"
+      puts "Item description: #{item_description}"
+      puts "Washing instructions: #{washing_instructions}"
+      puts "Image URL: #{encoded_image_url}"
       puts "---------------------------------------------------------------"
     else
       puts "Collection details not found"
