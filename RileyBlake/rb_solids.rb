@@ -5,7 +5,7 @@ require 'nokogiri'
 base_url = "https://www.rileyblakedesigns.com"
 
 # URL for Riley Blake collection
-collection_url = "#{base_url}/Fabric/Basics/Confetti-Cottons?=page7"
+collection_url = "#{base_url}/Fabric/Basics/Confetti-Cottons?=page1"
 
 # Fetch the HTML of the collection page
 html = URI.open(collection_url).read
@@ -56,7 +56,7 @@ product_links.each do |link|
     # Encoding URL to remove space from image link
     encoded_image_url = URI::DEFAULT_PARSER.escape(image_url)
 
-    if upc_code && sku_number && fiber_content && fabric_width && designer_name && collection_name && item_description && washing_instructions && image_url
+    if upc_code && sku_number && fiber_content && fabric_width && designer_name && collection_name && item_description && washing_instructions
       upc_number = upc_code.text.strip.split(':').last.strip
       sku_number = sku_number.text.strip.split(':').last.strip
       fiber_content = fiber_content.text.strip.split(':').last.strip
