@@ -76,12 +76,17 @@ doc.css('div.mk-category-grid-item').each do |product|
       upc_code_element = product_doc.css('p.mk-product-info').find { |p| p.text.include?("UPC:") }
       upc = upc_code_element ? upc_code_element.css('b').text.strip : "No UPC found"
 
+      # Extract the product image URL
+      image_element = product_doc.css('div.pa-1.col-sm-10.col-9 img.mk-product-image')
+      image_url = image_element.empty? ? "No image found" : image_element.attr('src').value
+
       puts "Designer Name: #{designer_name}"
       puts "Group Name: #{group_name}"
       puts "Number of Pieces: #{nbr_pieces}"
       puts "SKU: #{sku}"
       puts "UPC: #{upc}"
       puts "Precut Type: #{precut_type}"
+      puts "Image URL: #{image_url}"
       puts "---------------------------------------------------------------"
 
     rescue => e
