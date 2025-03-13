@@ -1,6 +1,8 @@
 require "vips"
 
-im = Vips::Image.new_from_file 'C:\Users\hawth\RubymineProjects\hawthorne-tasks\72.png'
+image_path = 'C:\Users\charl\RubymineProjects\hawthorne-tasks\Vips\c1aot3su7iylc9qst7kbt61e88bd.jpg'
+
+im = Vips::Image.new_from_file image_path
 
 # put im at position (100, 100) in a 3000 x 3000 pixel image,
 # make the other pixels in the image by mirroring im up / down /
