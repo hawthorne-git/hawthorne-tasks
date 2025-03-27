@@ -1,6 +1,6 @@
 require "vips"
 
-image_path = 'C:\Users\charl\RubymineProjects\hawthorne-tasks\Vips\c1aot3su7iylc9qst7kbt61e88bd.jpg'
+image_path = 'C:\Users\hawth\RubymineProjects\hawthorne-tasks\Vips\c1aot3su7iylc9qst7kbt61e88bd.jpg'
 
 im = Vips::Image.new_from_file image_path
 
