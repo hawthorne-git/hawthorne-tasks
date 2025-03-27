@@ -34,7 +34,7 @@ doc.css('div.mk-category-grid-item').each do |product|
     puts "Product URL: #{product_url}"
 
     # skip products
-    skip_products = ['Assortment', 'ASST', 'AB', 'PP', 'LC', 'JR']
+    skip_products = ["Assortment", "Asst", "AB", "PP", "LC", "JR"]
 
     # go to each product page if the URL exists
     if product_url
@@ -75,6 +75,10 @@ doc.css('div.mk-category-grid-item').each do |product|
       style_element = product_doc.css('div.mk-product-description p').first
       style = style_element ? style_element.text.strip : "No description found"
 
+      # Extract the product image URL
+      image_element = product_doc.css('div.pa-1.col-sm-10.col-9 img.mk-product-image')
+      image_url = image_element.empty? ? "No image found" : image_element.attr('src').value
+
       # prints details
       puts "Designer Name: #{designer_name}"
       puts "Collection Name: #{collection_name}"
@@ -84,6 +88,7 @@ doc.css('div.mk-category-grid-item').each do |product|
       puts "Fabric Type: #{fabric_type}"
       puts "Fabric Width: #{fabric_width}"
       puts "UPC: #{upc}"
+      puts "Image URL: #{image_url}"
       puts '                                                               '
       puts '---------------------------------------------------------------'
       puts '                                                               '
