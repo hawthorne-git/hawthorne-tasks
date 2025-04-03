@@ -2,6 +2,9 @@ require 'selenium-webdriver'
 require 'nokogiri'
 require 'open-uri'
 
+
+collection_styles = ["Garden Study", "Ribboned Blossoms", "Heathland Allusion", "Floral Metaphor", "Beloved Memoir", "Tilted Horizon", "Subtle Parallelism", "Plaid Tales", "Striped Narratives", "Kerchief Folklore", "Memoir Bound"]
+
 # Initialize Selenium WebDriver for Chrome
 options = Selenium::WebDriver::Chrome::Options.new
 options.add_argument('--headless') # Run in headless mode (no UI)
@@ -16,9 +19,6 @@ sleep 2
 
 page_source = driver.page_source
 doc = Nokogiri::HTML(page_source)
-
-# base URL for AGF site
-base_url = "https://www.artgalleryfabrics.com/"
 
 # select product elements
 doc.css('.masonbox.gallerycol5').each do |product|
@@ -48,6 +48,20 @@ doc.css('.masonbox.gallerycol5').each do |product|
 
       style = product_doc.css('div.five.columns div[style="font-size: 1.2em; font-weight: bold"]').text.strip
 
+      if collection_styles.any? { |collection_style| style.include?(collection_style) }
+        matched_style = collection_styles.find { |collection_style| style.include?(collection_style) }
+
+        colorway = style.sub(matched_style, '').strip
+
+        if colorway.empty?
+          colorway = "Multi"
+        end
+
+        puts "Colorway: #{colorway}"
+      else
+        puts "No matching collection style for: #{style}"
+      end
+
       image_element = product_doc.css('div.seven.columns img').first
       image_url = image_element['src'] rescue nil
 
@@ -58,6 +72,7 @@ doc.css('.masonbox.gallerycol5').each do |product|
       puts "Style: #{style}"
       puts "Image URL: #{image_url}"
       puts "SKU: #{sku}"
+      puts "Colorway: #{colorway}"
 
     end
   end
