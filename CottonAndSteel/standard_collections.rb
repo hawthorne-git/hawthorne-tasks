@@ -2,8 +2,6 @@ require 'selenium-webdriver'
 require 'nokogiri'
 require 'open-uri'
 
-collection_styles = ["Having A Whale Of A Time", "Nothing But Blue Skies And Ocean Tides", "Mermaid Hair, Don\'t Care", "Wanderlust And Ocean Dust", "High Tides And Good Vibes"]
-
 # Initialize Selenium WebDriver for Chrome
 options = Selenium::WebDriver::Chrome::Options.new
 options.add_argument('--headless') # Run in headless mode (no UI)
@@ -35,8 +33,31 @@ doc.css('.item.col-ms-6.col-sm-4.grid-group-item').each do |product|
       product_doc = Nokogiri::HTML(product_page_source)
 
       # extract details
-      style = product_doc.at_css('p[style="font-size:larger;"] strong').text.strip
+      product_details = product_doc.at_css('p[style="font-size:larger;"] strong').text.strip
+
+      # extract style name
+      style = product_details.split(' - ')[1]
       puts "Style: #{style}"
+
+      # extract colorway
+      colorway_full = product_details.split(' - ')[2]
+      colorway = colorway_full.sub(/ Fabric$/, '').strip
+      puts "Colorway: #{colorway}"
+
+      # extract SKU
+      sku = product_details.split.first
+      puts "SKU: #{sku}"
+
+      # extract image URL
+      image_url_cs = "https://www.cottonandsteelfabrics.com/"
+      image_url_raw = product_doc.at_css('.pd_image_fabric img')['src']
+      image_url = image_url_cs + image_url_raw
+      puts "Image: #{image_url}"
+
+      # extract UPC
+      upc = product_doc.at_css('span[itemprop="gtin13"]').text.strip
+      puts "UPC: #{upc}"
+      puts "------------------------------------------------------------------------------------- "
     end
   end
 end
