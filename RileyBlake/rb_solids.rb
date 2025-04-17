@@ -5,7 +5,7 @@ require 'nokogiri'
 base_url = "https://www.rileyblakedesigns.com"
 
 # URL for Riley Blake collection
-collection_url = "#{base_url}/Fabric/Basics/Confetti-Cottons?=page1"
+collection_url = "#{base_url}/Fabric/Coming-Soon/January-2026/Autumn-Woodland-2"
 
 # Fetch the HTML of the collection page
 html = URI.open(collection_url).read
