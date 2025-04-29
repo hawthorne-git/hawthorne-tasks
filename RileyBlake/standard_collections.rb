@@ -72,9 +72,20 @@ product_links.each do |link|
     title_element = product_doc.at_css('.product-details-full-content-header-title[itemprop="name"]')
     full_title = title_element.text.strip if title_element
 
-    # fallback
-    style = nil
-    colorway = nil
+    # extract style and colorway from full_title
+    if full_title && collection_name
+
+      # remove the collection name from the start of the full title
+      title_without_collection = full_title.sub(collection_name, '').strip
+
+      # split remaining parts
+      title_parts = title_without_collection.split
+
+      if title_parts.length >= 2
+        colorway = title_parts.last
+        style = title_parts[0...-1].join(' ')
+      end
+    end
 
     # extract the image URL
     image_element = product_doc.at_css('div.product-details-image-gallery-detailed-image img.center-block')
@@ -90,6 +101,8 @@ product_links.each do |link|
     puts "Fiber content: #{fiber_content}"
     puts "Fabric width: #{fabric_width}"
     puts "Designer: #{designer_name}"
+    puts "Style: #{style}"
+    puts "Colorway: #{colorway}"
     puts "Collection name: #{collection_name}"
     puts "Item description: #{item_description}"
     puts "Washing instructions: #{washing_instructions}"
