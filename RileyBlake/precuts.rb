@@ -1,88 +1,91 @@
+require 'selenium-webdriver'
 require 'nokogiri'
 require 'open-uri'
+require 'uri'
 
 # URL for Riley Blake precuts
-precuts_url = "https://www.rileyblakedesigns.com/Fabric/Precuts/Rolie-Polies?page=1"
+precuts_url = "https://www.rileyblakedesigns.com/Fabric/Precuts/10-Stackers/Release-Date-Facet/February-2026,January-2026"
 
-# fetch the HTML of the precuts page
-html = URI.open(precuts_url).read
-doc = Nokogiri::HTML(html)
+# method to extract product-info
+def extract_product_detail(product_info, title)
+  li = product_info.find { |li| li.at_css('.product-info-title')&.text&.include?(title) }
+  li&.at_css('.product-information-detail')&.text&.strip
+end
+
+# start a headless Chrome browser
+options = Selenium::WebDriver::Chrome::Options.new
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')
+options.add_argument('--no-sandbox')
+driver = Selenium::WebDriver.for :chrome, options: options
+
+driver.navigate.to(precuts_url)
+
+sleep 3
+
+precuts_html = driver.page_source
+precuts_doc = Nokogiri::HTML(precuts_html)
 
 # base URL
 base_url = "https://www.rileyblakedesigns.com"
 
-# select product elements
-doc.css('div.facets-item-cell-grid').each do |product|
+# select product links
+product_links = precuts_doc.css('a.facets-item-cell-grid-title')
 
-  # extract product title
-  product_title = product.css('.facets-item-cell-grid-title span[itemprop="name"]').text.strip
-
-  # extract product URL from meta or anchor tag
-  product_href = product.at('meta[itemprop="url"]')['content'] rescue nil
-  product_url = product_href ? "#{base_url}#{product_href}" : nil
-  product_url ||= "#{base_url}#{product.at('a.facets-item-cell-grid-title')['href']}" rescue nil
+# process each product link
+product_links.each do |link|
+  product_title = link.css('span[itemprop="name"]').text.strip
+  product_href = link['href']
+  product_url = URI.join(base_url, product_href).to_s
 
   puts "Found product: #{product_title}"
   puts "Product URL: #{product_url}"
 
-  # fetch product page
   begin
-    next unless product_url
+    driver.navigate.to(product_url)
 
-    product_html = URI.open(product_url).read
-    product_doc = Nokogiri::HTML(product_html)
+    sleep 3
 
-    # extract product details
-    upc_code = product_doc.css('.list-details p').find { |p| p.text.include?('UPC Code') }
-    sku_number = product_doc.css('.list-details p').find { |p| p.text.include?('Item Number') }
-    fiber_content = product_doc.css('.list-details p').find { |p| p.text.include?('Fiber Content') }
-    fabric_width = product_doc.css('.list-details p').find { |p| p.text.include?('Width') }
-    designer_name = product_doc.css('.list-details p').find { |p| p.text.include?('Designer') }
-    collection_name = product_doc.css('.list-details p').find { |p| p.text.include?('Collection') }
-    item_description = product_doc.css('.list-details p').find { |p| p.text.include?('Item Description') }
-    washing_instructions = product_doc.css('.list-details p').find { |p| p.text.include?('Washing Instructions') }
-    packaging_minimum = product_doc.css('.list-details p').find { |p| p.text.include?('Packaging') }
+    product_doc = Nokogiri::HTML(driver.page_source)
 
-    # extract the image URL from the product page
-    product_image_element = product_doc.css('div.item-details-image-gallery li img[itemprop="image"]')
+    product_info = product_doc.css('.product-info-list li')
 
-    if product_image_element.any?
-      # extract the first image URL from the gallery
-      image_url = product_image_element.first.attr('src').to_s
-      encoded_image_url = URI::DEFAULT_PARSER.escape(image_url)
-      puts "Image URL: #{encoded_image_url}"
-    else
-      puts "No image found for this product"
-    end
+    upc = extract_product_detail(product_info, 'UPC Code')
+    sku = extract_product_detail(product_info, 'Item Number')
+    fiber_content = extract_product_detail(product_info, 'Fiber Content')
+    fabric_width = extract_product_detail(product_info, 'Width')
+    designer_name = extract_product_detail(product_info, 'Designer')
+    collection_name = extract_product_detail(product_info, 'Collection')
+    item_description = extract_product_detail(product_info, 'Item Description')
+    washing_instructions = extract_product_detail(product_info, 'Washing Instructions')
 
-    if upc_code && sku_number && fiber_content && fabric_width && designer_name && collection_name && item_description && washing_instructions
-      upc_number = upc_code.text.strip.split(':').last.strip
-      sku_number = sku_number.text.strip.split(':').last.strip
-      fiber_content = fiber_content.text.strip.split(':').last.strip
-      fabric_width = fabric_width.text.strip.split(':').last.strip
-      designer_name = designer_name.text.strip.split(':').last.strip
-      collection_name = collection_name.text.strip.split(':').last.strip
-      item_description = item_description.text.strip.split(':').last.strip
-      washing_instructions = washing_instructions.text.strip.split(':').last.strip
-      packaging_minimum = packaging_minimum.text.strip.split(':').last.strip
+    # extract the full product title
+    title_element = product_doc.at_css('.product-details-full-content-header-title[itemprop="name"]')
+    full_title = title_element.text.strip if title_element
 
-      puts "UPC number: #{upc_number}"
-      puts "SKU number: #{sku_number}"
-      puts "Fiber content: #{fiber_content}"
-      puts "Fabric width: #{fabric_width}"
-      puts "Designer: #{designer_name}"
-      puts "Collection name: #{collection_name}"
-      puts "Item description: #{item_description}"
-      puts "Washing instructions: #{washing_instructions}"
-      puts "Image URL: #{encoded_image_url}"
-      puts "Packaging Minimum: #{packaging_minimum}"
-      puts "---------------------------------------------------------------"
-    else
-      puts "Collection details not found"
-    end
+    # extract the image URL
+    image_element = product_doc.at_css('div.product-details-image-gallery-detailed-image img.center-block')
+    image_url_raw = image_element&.[]('src')
+    image_url = image_url_raw.gsub(' ', '%20')
+
+    puts "UPC number: #{upc}"
+    puts "SKU number: #{sku}"
+    puts "Image URL: #{image_url}"
+    puts "Full Title: #{full_title}"
+    puts "Fiber content: #{fiber_content}"
+    puts "Fabric width: #{fabric_width}"
+    puts "Designer: #{designer_name}"
+    puts "Collection name: #{collection_name}"
+    puts "Item description: #{item_description}"
+    puts "Washing instructions: #{washing_instructions}"
+    puts "---------------------------------------------------------------"
+
   rescue => e
-    puts "Error fetching or parsing product page: #{e.message}"
+    puts "Error processing product at #{product_url}: #{e.message}"
   end
 end
+
+driver.quit
+
 
 

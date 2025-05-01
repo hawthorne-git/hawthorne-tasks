@@ -7,13 +7,13 @@ require 'uri'
 
 COLLECTION_URL = 'https://www.rileyblakedesigns.com/Fabric/Coming-Soon/January-2026/Autumn-Woodland-2'
 
-# Helper method to extract product details from a product-info-list
+# method to extract product-info
 def extract_product_detail(product_info, title)
   li = product_info.find { |li| li.at_css('.product-info-title')&.text&.include?(title) }
   li&.at_css('.product-information-detail')&.text&.strip
 end
 
-# Start a headless Chrome browser
+# start a headless Chrome browser
 options = Selenium::WebDriver::Chrome::Options.new
 options.add_argument('--headless')
 options.add_argument('--disable-gpu')
@@ -92,8 +92,6 @@ product_links.each do |link|
     image_url_raw = image_element&.[]('src')
     image_url = image_url_raw.gsub(' ', '%20')
 
-
-    # Output
     puts "UPC number: #{upc}"
     puts "SKU number: #{sku}"
     puts "Image URL: #{image_url}"
@@ -113,7 +111,6 @@ product_links.each do |link|
   end
 end
 
-# Cleanup Selenium browser
 driver.quit
 
 
