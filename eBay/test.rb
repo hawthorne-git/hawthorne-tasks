@@ -1,7 +1,7 @@
 require 'rest-client'
 require 'json'
 
-TOKEN = 'v^1.1#i^1#r^0#p^3#I^3#f^0#t^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'
+TOKEN = 'v^1.1#i^1#f^0#p^3#I^3#r^0#t^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'
 PAYMENT_POLICY_ID = '6210033000'
 RETURN_POLICY_ID = '6210034000'
 FULFILLMENT_POLICY_ID = '6210028000'
@@ -19,28 +19,46 @@ begin
     product: {
       title: "Test",
       description: "Test description",
-      aspects: { Brand: ["HSCO"] },
+      aspects: {
+        Brand: ["HSCO"],
+        Model: ["Test Model"],
+        "Storage Capacity": ["64 GB"],
+        Color: ["Black"]
+      },
       imageUrls: ["https://hawthorne-s3-bucket.s3.us-east-2.amazonaws.com/static-image-assets/Logo+FINAL+WEBP.webp"],
-      category: { categoryId: "261731" }
+      category: { categoryId: "15687" }
     },
     availability: {
       shipToLocationAvailability: {
         quantity: 1
       }
     },
-    categoryId: '28162',
+    condition: 'NEW',
+    packageWeightAndSize: {
+      dimensions: {
+        length: 10,
+        width: 6,
+        height: 2,
+        unit: "INCH"
+      },
+      weight: {
+        value: 2,
+        unit: "POUND"
+      }
+    },
+    categoryId: '9355',
     merchantLocationKey: "1",
     listing: {
       marketplaceId: "EBAY_US",
       location: {
         country: "US",
-        postalCode: "12571"
+        postalCode: "95008"
       }
     }
   }
 
   res = RestClient.put(
-    "https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/test-1234567890",
+    "https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/test-123456666",
     inventory_item_body.to_json,
     HEADERS
   )
@@ -53,11 +71,12 @@ end
 # create offer - necessary for ebay
 begin
   offer_body = {
-    sku: 'test-1234567890',
+    sku: 'test-123456666',
     marketplaceId: "EBAY_US",
     format: "FIXED_PRICE",
     listingDescription: "test listing",
     availableQuantity: 1,
+    categoryId: '9355',
     pricingSummary: {
       price: { value: "9.99", currency: "USD" }
     },
@@ -68,12 +87,10 @@ begin
     },
     merchantLocationKey: "1",
     listing: {
-      marketplaceId: "EBAY_US",
-      condition: "1000",
-      categoryId: '261716',
+      condition: "NEW",
       location: {
         country: "US",
-        postalCode: "12571",
+        postalCode: "95008"
       }
     }
   }
