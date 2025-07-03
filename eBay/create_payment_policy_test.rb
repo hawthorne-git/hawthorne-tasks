@@ -1,0 +1,35 @@
+require 'rest-client'
+require 'json'
+
+TOKEN = 'v^1.1#i^1#I^3#f^0#p^3#r^0#t^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'
+
+HEADERS = {
+  Authorization: "Bearer #{TOKEN}",
+  "Content-Type" => "application/json",
+  Accept: "application/json",
+  "Content-Language" => "en-US"
+}
+
+# Create payment policy
+begin
+  payment_policy_body = {
+    name: "Payment Policy Test",
+    marketplaceId: "EBAY_US",
+    categoryTypes: [
+      {
+        name: "ALL_EXCLUDING_MOTORS_VEHICLES"
+      }
+    ],
+    immediatePay: true
+  }
+
+  res = RestClient.post(
+    "https://api.sandbox.ebay.com/sell/account/v1/payment_policy",
+    payment_policy_body.to_json,
+    HEADERS
+  )
+
+  puts "Payment policy created: #{res.code}"
+rescue RestClient::ExceptionWithResponse => e
+  puts "Failed to create payment policy: #{e.response}"
+end
